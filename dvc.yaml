@@ -1,0 +1,23 @@
+stages:
+  process_data:
+    cmd: python src/data/make_dataset.py
+    deps:
+      - src/data/make_dataset.py
+      - data/raw
+    outs:
+      - data/processed
+  build_features:
+    cmd: python src/features/build_features.py
+    deps:
+      - src/features/build_features.py
+      - data/processed
+    outs:
+      - data/processed/features.csv
+  train_model:
+    cmd: python src/models/train_model.py
+    deps:
+      - src/models/train_model.py
+      - data/processed/features.csv
+    outs:
+      - models/lstm_model.pth
+      - models/rf_model.pkl

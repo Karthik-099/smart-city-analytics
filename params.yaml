@@ -1,0 +1,10 @@
+data:
+  path: data/raw/traffic_data.csv
+model:
+  lstm_hidden_size: 64
+  lstm_num_layers: 2
+  rf_n_estimators: 100
+training:
+  test_size: 0.2
+  batch_size: 32
+  epochs: 20
