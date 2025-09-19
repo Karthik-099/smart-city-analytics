@@ -5,12 +5,12 @@ stages:
       - src/data/make_dataset.py
       - data/raw
     outs:
-      - data/processed
+      - data/processed/cleaned_data.csv
   build_features:
     cmd: python src/features/build_features.py
     deps:
       - src/features/build_features.py
-      - data/processed
+      - data/processed/cleaned_data.csv
     outs:
       - data/processed/features.csv
   train_model:

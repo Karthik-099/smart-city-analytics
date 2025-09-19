@@ -13,7 +13,8 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
     df['VehicleCount_lag1'] = df['VehicleCount'].shift(1)
     df['AverageSpeed_lag1'] = df['AverageSpeed'].shift(1)
     df['VehicleCount_rolling_mean'] = df['VehicleCount'].rolling(window=3).mean()
-    df['Congestion'] = ((df['AverageSpeed'] < 30) & (df['Occupancy'] > 0.5)).astype(int)
+    # Adjusted for Occupancy in percentage (0-100)
+    df['Congestion'] = ((df['AverageSpeed'] < 30) & (df['Occupancy'] > 50)).astype(int)
     df = df.dropna()
     logging.info("Features engineered")
     return df
