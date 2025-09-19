@@ -1,85 +1,64 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 import pickle
-import torch
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.preprocessing import StandardScaler
+import os
 
-# Define LSTM model class (must match train_model.py)
-class LSTMModel(torch.nn.Module):
-    def __init__(self, input_size=7, hidden_size=64, num_layers=2):
-        super().__init__()
-        self.lstm = torch.nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
-        self.fc = torch.nn.Linear(hidden_size, 1)
-        self.sigmoid = torch.nn.Sigmoid()
+# Set page configuration
+st.set_page_config(page_title="Smart City Traffic Analytics", layout="wide")
 
-    def forward(self, x):
-        _, (h, _) = self.lstm(x.unsqueeze(1))
-        out = self.fc(h[-1])
-        return self.sigmoid(out)
+# Title
+st.title("Smart City Traffic Analytics Dashboard")
 
 # Load data
-df = pd.read_csv('/home/karthik/smart-city-analytics/data/processed/features.csv', parse_dates=['Timestamp'])
+data_path = os.path.join("data", "processed", "features.csv")
+df = pd.read_csv(data_path, parse_dates=['Timestamp'])
 
-# Load models
-with open('/home/karthik/smart-city-analytics/models/rf_model.pkl', 'rb') as f:
-    rf_model = pickle.load(f)
-lstm_model = LSTMModel()
-lstm_model.load_state_dict(torch.load('/home/karthik/smart-city-analytics/models/lstm_model.pth'))
-lstm_model.eval()
+# Calculate KPIs
+congestion_rate = df['Congestion'].mean() * 100
+avg_vehicle_count = df['VehicleCount'].mean()
+avg_speed = df['AverageSpeed'].mean()
 
-# Fit scaler
-features = ['Hour', 'DayOfWeek', 'IsWeekend', 'RushHour', 'VehicleCount_lag1', 'AverageSpeed_lag1', 'VehicleCount_rolling_mean']
-scaler = StandardScaler()
-scaler.fit(df[features])
+# Display KPIs
+col1, col2, col3 = st.columns(3)
+col1.metric("Congestion Rate", f"{congestion_rate:.2f}%")
+col2.metric("Average Vehicle Count", f"{avg_vehicle_count:.2f}")
+col3.metric("Average Speed", f"{avg_speed:.2f} km/h")
 
-# KPIs
-st.title("Smart City Traffic Dashboard")
-st.header("Key Performance Indicators")
-st.metric("Average Speed", f"{df['AverageSpeed'].mean():.2f} km/h")
-st.metric("Average Vehicle Count", f"{df['VehicleCount'].mean():.2f}")
-st.metric("Congestion Rate", f"{(df['Congestion'].mean() * 100):.2f}%")
+# Traffic Trends Over Time
+st.subheader("Traffic Trends Over Time")
+fig = px.line(df, x='Timestamp', y='VehicleCount', title='Vehicle Count Over Time')
+st.plotly_chart(fig, use_container_width=True)
 
-# Traffic Trends Chart
-st.header("Traffic Trends Chart")
-fig, ax = plt.subplots(figsize=(10, 6))
-ax.plot(df['Timestamp'], df['VehicleCount'], label='Vehicle Count', alpha=0.7)
-ax.plot(df['Timestamp'], df['AverageSpeed'], label='Average Speed (km/h)', alpha=0.7)
-ax.set_title('Traffic Metrics Over Time')
-ax.set_xlabel('Timestamp')
-ax.set_ylabel('Value')
-ax.legend()
-ax.grid(True)
-st.pyplot(fig)
+# Congestion Prediction
+st.subheader("Congestion Prediction")
+with st.form("prediction_form"):
+    hour = st.slider("Hour of Day", 0, 23, 8)
+    day_of_week = st.slider("Day of Week (0=Mon, 6=Sun)", 0, 6, 1)
+    is_weekend = st.selectbox("Is Weekend?", [0, 1], index=0)
+    rush_hour = st.selectbox("Rush Hour?", [0, 1], index=1)
+    vehicle_count_lag1 = st.number_input("Previous Hour Vehicle Count", value=150.0)
+    avg_speed_lag1 = st.number_input("Previous Hour Average Speed", value=30.0)
+    vehicle_count_rolling_mean = st.number_input("Rolling Mean Vehicle Count", value=145.0)
+    submitted = st.form_submit_button("Predict")
 
-# Prediction Form
-st.header("Predict Congestion")
-model_choice = st.selectbox("Select Model", ["Random Forest", "LSTM"], index=0)
-hour = st.number_input("Hour", min_value=0, max_value=23, value=8)
-day_of_week = st.number_input("Day of Week", min_value=0, max_value=6, value=1)
-is_weekend = st.selectbox("Is Weekend", [0, 1], index=0)
-rush_hour = st.selectbox("Rush Hour", [0, 1], index=1)
-vehicle_count_lag1 = st.number_input("Vehicle Count Lag1", value=150.0)
-speed_lag1 = st.number_input("Speed Lag1", value=30.0)
-vehicle_rolling_mean = st.number_input("Vehicle Rolling Mean", value=145.0)
+    if submitted:
+        # Load model
+        model_path = os.path.join("models", "rf_model.pkl")
+        with open(model_path, 'rb') as f:
+            model = pickle.load(f)
 
-if st.button("Predict"):
-    input_df = pd.DataFrame({
-        'Hour': [hour],
-        'DayOfWeek': [day_of_week],
-        'IsWeekend': [is_weekend],
-        'RushHour': [rush_hour],
-        'VehicleCount_lag1': [vehicle_count_lag1],
-        'AverageSpeed_lag1': [speed_lag1],
-        'VehicleCount_rolling_mean': [vehicle_rolling_mean]
-    })
-    input_scaled = scaler.transform(input_df)
-    if model_choice == "Random Forest":
-        prediction = rf_model.predict(input_scaled)[0]
-        st.write(f"Congestion (Random Forest): {'Yes' if prediction == 1 else 'No'}")
-    else:
-        input_tensor = torch.tensor(input_scaled, dtype=torch.float32)
-        with torch.no_grad():
-            prediction = lstm_model(input_tensor).round().item()
-        st.write(f"Congestion (LSTM): {'Yes' if prediction == 1 else 'No'}")
+        # Prepare input
+        input_data = pd.DataFrame({
+            'Hour': [hour],
+            'DayOfWeek': [day_of_week],
+            'IsWeekend': [is_weekend],
+            'RushHour': [rush_hour],
+            'VehicleCount_lag1': [vehicle_count_lag1],
+            'AverageSpeed_lag1': [avg_speed_lag1],
+            'VehicleCount_rolling_mean': [vehicle_count_rolling_mean]
+        })
+
+        # Predict
+        prediction = model.predict(input_data)[0]
+        st.write(f"Congestion: {'Yes' if prediction == 1 else 'No'}")
