@@ -1,0 +1,55 @@
+schema: '2.0'
+stages:
+  process_data:
+    cmd: python src/data/make_dataset.py
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: 5da65bacc645a46ca0aff2c2a7dad79d.dir
+      size: 894335
+      nfiles: 1
+    - path: src/data/make_dataset.py
+      hash: md5
+      md5: 04504f67f56f1099429e79a3bda35c32
+      size: 2511
+    outs:
+    - path: data/processed/cleaned_data.csv
+      hash: md5
+      md5: d9042d57f051e25d46b9555a18265f6a
+      size: 884256
+  build_features:
+    cmd: python src/features/build_features.py
+    deps:
+    - path: data/processed/cleaned_data.csv
+      hash: md5
+      md5: d9042d57f051e25d46b9555a18265f6a
+      size: 884256
+    - path: src/features/build_features.py
+      hash: md5
+      md5: 95cc82c2ca6af53a5b23329f6df54a50
+      size: 1050
+    outs:
+    - path: data/processed/features.csv
+      hash: md5
+      md5: 47d1293a7eb7d896bfc3338767953b5b
+      size: 1127553
+  train_model:
+    cmd: python src/models/train_model.py
+    deps:
+    - path: data/processed/features.csv
+      hash: md5
+      md5: 47d1293a7eb7d896bfc3338767953b5b
+      size: 1127553
+    - path: src/models/train_model.py
+      hash: md5
+      md5: 470754616ddcee8b5c22d771f8a06f28
+      size: 4171
+    outs:
+    - path: models/lstm_model.pth
+      hash: md5
+      md5: 05695f927ee97167695448260fa3719c
+      size: 211874
+    - path: models/rf_model.pkl
+      hash: md5
+      md5: 9974bb8067448aeb26bd6188940e7506
+      size: 12598420
