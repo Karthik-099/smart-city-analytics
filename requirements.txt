@@ -3,7 +3,7 @@ numpy==1.26.4
 matplotlib==3.8.2
 seaborn==0.13.1
 scikit-learn==1.4.0
-torch==2.2.0
+torch==2.2.0+cpu
 mlflow==2.10.2
 dvc==3.48.0
 streamlit==1.30.0
