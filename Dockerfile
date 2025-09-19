@@ -1,7 +1,10 @@
 
-FROM python:3.10-slim AS builder
+FROM python:3.10-alpine AS builder
 
 WORKDIR /app
+
+
+RUN apk add --no-cache gcc musl-dev linux-headers
 
 
 RUN pip install --upgrade pip
@@ -10,7 +13,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --user -r requirements.txt
 
 
-FROM python:3.10-slim
+FROM python:3.10-alpine
 
 WORKDIR /app
 
@@ -19,6 +22,7 @@ COPY --from=builder /root/.local /root/.local
 ENV PATH=/root/.local/bin:$PATH
 
 COPY . .
+
 
 EXPOSE 8501 5000
 
