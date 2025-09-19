@@ -1,4 +1,4 @@
 [core]
     remote = myremote
 ['remote "myremote"']
-    url = /path/to/local/storage
+    url = /home/karthik/dvc_storage
