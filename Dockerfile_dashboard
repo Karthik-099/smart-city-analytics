@@ -1,0 +1,16 @@
+FROM python:3.10-slim AS builder
+WORKDIR /app
+RUN pip install --upgrade pip
+COPY requirements_dashboard.txt .
+RUN --mount=type=cache,target=/root/.cache/pip pip install --user -r requirements_dashboard.txt && rm -rf /root/.cache/pip
+FROM python:3.10-slim
+WORKDIR /app
+COPY --from=builder /root/.local /root/.local
+ENV PATH=/root/.local/bin:$PATH
+COPY deployment/ ./deployment/
+COPY data/ ./data/
+COPY models/ ./models/
+COPY mlruns/ ./mlruns/
+COPY dvc.yaml params.yaml ./
+EXPOSE 8501
+CMD ["streamlit", "run", "deployment/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
