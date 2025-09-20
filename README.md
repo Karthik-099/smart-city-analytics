@@ -46,7 +46,7 @@ pip install -r requirements_dashboard.txt</code></pre>
       <pre><code>streamlit run deployment/app.py</code></pre>
       <p>Visit <a href="http://localhost:8501">http://localhost:8501</a> to see traffic stats, charts, and predictions.</p>
     </li>
-    
+    <li><b>Run the API</b>:
       <pre><code>python deployment/api.py</code></pre>
       <p>Test it:
       <pre><code>curl -X POST -H "Content-Type: application/json" -d '{"Hour": 8, "DayOfWeek": 1, "IsWeekend": 0, "RushHour": 1, "VehicleCount_lag1": 150, "AverageSpeed_lag1": 30, "VehicleCount_rolling_mean": 145}' http://localhost:5000/predict</code></pre>
@@ -64,7 +64,7 @@ pip install -r requirements_dashboard.txt</code></pre>
       <pre><code>docker run -p 8501:8501 karthik75/smart-city-analytics-dashboard:latest</code></pre>
       <p>Visit <a href="http://localhost:8501">http://localhost:8501</a> for the dashboard.</p>
     </li>
-
+    <li><b>Pull the API image</b>:
       <pre><code>docker pull karthik75/smart-city-analytics-api:latest</code></pre>
     </li>
     <li><b>Run the API</b>:
@@ -78,9 +78,11 @@ pip install -r requirements_dashboard.txt</code></pre>
   <h2>Where to Access</h2>
   <ul>
     <li><b>Dashboard</b>: Open <a href="http://localhost:8501">http://localhost:8501</a> after running locally or via Docker.</li>
-  
+    <li><b>API</b>: Send requests to <a href="http://localhost:5000/predict">http://localhost:5000/predict</a> after running the API.</li>
     <li><b>Experiments</b>: Run <code>mlflow ui</code> and visit <a href="http://localhost:5000">http://localhost:5000</a> to see model logs.</li>
   </ul>
 
+  <h2>Questions?</h2>
+  <p>Check the repo: <a href="https://github.com/Karthik-099/smart-city-analytics">github.com/Karthik-099/smart-city-analytics</a>. Feel free to open an issue!</p>
 </body>
 </html>
