@@ -1,15 +1,4 @@
-<html>
-<head>
-  <title>Smart City Analytics Platform</title>
-  <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; }
-    h1, h2, h3 { color: #333; }
-    pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
-    code { font-family: monospace; }
-    a { color: #0066cc; }
-  </style>
-</head>
-<body>
+
   <h1>Smart City Analytics Platform</h1>
   <p>This project helps predict traffic congestion in cities using data from sensors and cameras. It’s built with two machine learning models: LSTM (good for time-series data) and Random Forest (great for quick predictions). There’s a dashboard to see traffic stats and a web API to get real-time predictions.</p>
 
