@@ -1,3 +1,17 @@
-data
-mlruns
+cat <<EOT > .gitignore
+# Virtual environment
+traffic/
+# Git pack files
+.git/objects/pack/*
+# Large data and model files (tracked by DVC)
+data/raw/traffic_data.csv
+data/processed/*.csv
+models/rf_model.pkl
+models/lstm_model.pth
+# Other common ignores
 *.pyc
+__pycache__/
+*.ipynb_checkpoints/
+mlruns/
+.dvc/cache/
+EOT
