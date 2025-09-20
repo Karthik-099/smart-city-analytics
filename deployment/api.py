@@ -9,13 +9,13 @@ from src.models.train_model import LSTMModel
 
 app = Flask(__name__)
 
-# Load data for scaler
+
 df = pd.read_csv('/home/karthik/smart-city-analytics/data/processed/features.csv')
 features = ['Hour', 'DayOfWeek', 'IsWeekend', 'RushHour', 'VehicleCount_lag1', 'AverageSpeed_lag1', 'VehicleCount_rolling_mean']
 scaler = StandardScaler()
 scaler.fit(df[features])
 
-# Load LSTM model
+
 input_size = 7
 model = LSTMModel(input_size=input_size, hidden_size=64, num_layers=2)
 model.load_state_dict(torch.load('/home/karthik/smart-city-analytics/models/lstm_model.pth'))

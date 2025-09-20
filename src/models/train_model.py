@@ -97,8 +97,6 @@ if __name__ == "__main__":
     rf_model, rf_acc = train_rf(X_train, y_train, X_test, y_test, params)
     logging.info(f"LSTM Accuracy: {lstm_acc}, RF Accuracy: {rf_acc}")
 
-    report = f"LSTM Acc: {lstm_acc}
-RF Acc: {rf_acc}
-Better model: {'LSTM' if lstm_acc > rf_acc else 'RF'}"
+    report = f"LSTM Acc: {lstm_acc}\nRF Acc: {rf_acc}\nBetter model: {'LSTM' if lstm_acc > rf_acc else 'RF'}"
     with open('reports/model_comparison.txt', 'w') as f:
         f.write(report)

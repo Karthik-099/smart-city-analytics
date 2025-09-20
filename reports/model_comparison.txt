@@ -1,0 +1,3 @@
+LSTM Acc: 0.813
+RF Acc: 0.811
+Better model: LSTM
