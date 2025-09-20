@@ -1,6 +1,6 @@
 <html>
 <head>
-  <title>Smart City Analytics Platform</title>
+
  
 </head>
 <body>
